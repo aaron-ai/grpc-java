@@ -38,7 +38,7 @@ public final class ServerRegistry {
   private static ServerRegistry instance;
 
   @GuardedBy("this")
-  private final LinkedHashSet<ServerProvider> allProviders = new LinkedHashSet<>();
+  private final LinkedHashSet<ServerProvider> allProviders = new LinkedHashSet<ServerProvider>();
   /** Immutable, sorted version of {@code allProviders}. Is replaced instead of mutating. */
   @GuardedBy("this")
   private List<ServerProvider> effectiveProviders = Collections.emptyList();
@@ -73,7 +73,7 @@ public final class ServerRegistry {
   }
 
   private synchronized void refreshProviders() {
-    List<ServerProvider> providers = new ArrayList<>(allProviders);
+    List<ServerProvider> providers = new ArrayList<ServerProvider>(allProviders);
     // Sort descending based on priority.
     // sort() must be stable, as we prefer first-registered providers
     Collections.sort(providers, Collections.reverseOrder(new Comparator<ServerProvider>() {

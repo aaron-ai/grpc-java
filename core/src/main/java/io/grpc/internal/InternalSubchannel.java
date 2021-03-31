@@ -121,7 +121,7 @@ final class InternalSubchannel implements InternalInstrumented<ChannelStats>, Tr
    * will be present, but previously used transports that still have streams or are stopping may
    * also be present.
    */
-  private final Collection<ConnectionClientTransport> transports = new ArrayList<>();
+  private final Collection<ConnectionClientTransport> transports = new ArrayList<ConnectionClientTransport>();
 
   // Must only be used from syncContext
   private final InUseStateAggregator<ConnectionClientTransport> inUseStateAggregator =
@@ -163,7 +163,7 @@ final class InternalSubchannel implements InternalInstrumented<ChannelStats>, Tr
     Preconditions.checkArgument(!addressGroups.isEmpty(), "addressGroups is empty");
     checkListHasNoNulls(addressGroups, "addressGroups contains null entry");
     List<EquivalentAddressGroup> unmodifiableAddressGroups =
-        Collections.unmodifiableList(new ArrayList<>(addressGroups));
+        Collections.unmodifiableList(new ArrayList<EquivalentAddressGroup>(addressGroups));
     this.addressGroups = unmodifiableAddressGroups;
     this.addressIndex = new Index(unmodifiableAddressGroups);
     this.authority = authority;
@@ -344,7 +344,7 @@ final class InternalSubchannel implements InternalInstrumented<ChannelStats>, Tr
       @Override
       public void run() {
         List<EquivalentAddressGroup> newImmutableAddressGroups =
-            Collections.unmodifiableList(new ArrayList<>(newAddressGroups));
+            Collections.unmodifiableList(new ArrayList<EquivalentAddressGroup>(newAddressGroups));
         ManagedClientTransport savedTransport = null;
         SocketAddress previousAddress = addressIndex.getCurrentAddress();
         addressIndex.updateGroups(newImmutableAddressGroups);

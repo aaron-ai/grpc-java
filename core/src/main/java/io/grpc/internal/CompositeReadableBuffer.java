@@ -34,7 +34,7 @@ import java.util.Queue;
 public class CompositeReadableBuffer extends AbstractReadableBuffer {
 
   private int readableBytes;
-  private final Queue<ReadableBuffer> buffers = new ArrayDeque<>();
+  private final Queue<ReadableBuffer> buffers = new ArrayDeque<ReadableBuffer>();
 
   /**
    * Adds a new {@link ReadableBuffer} at the end of the buffer list. After a buffer is added, it is

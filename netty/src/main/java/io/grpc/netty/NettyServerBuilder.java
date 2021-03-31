@@ -87,13 +87,13 @@ public final class NettyServerBuilder extends AbstractServerImplBuilder<NettySer
       SharedResourcePool.forResource(Utils.DEFAULT_WORKER_EVENT_LOOP_GROUP);
 
   private final ServerImplBuilder serverImplBuilder;
-  private final List<SocketAddress> listenAddresses = new ArrayList<>();
+  private final List<SocketAddress> listenAddresses = new ArrayList<SocketAddress>();
 
   private TransportTracer.Factory transportTracerFactory = TransportTracer.getDefaultFactory();
   private ChannelFactory<? extends ServerChannel> channelFactory =
       Utils.DEFAULT_SERVER_CHANNEL_FACTORY;
-  private final Map<ChannelOption<?>, Object> channelOptions = new HashMap<>();
-  private final Map<ChannelOption<?>, Object> childChannelOptions = new HashMap<>();
+  private final Map<ChannelOption<?>, Object> channelOptions = new HashMap<ChannelOption<?>, Object>();
+  private final Map<ChannelOption<?>, Object> childChannelOptions = new HashMap<ChannelOption<?>, Object>();
   private ObjectPool<? extends EventLoopGroup> bossEventLoopGroupPool =
       DEFAULT_BOSS_EVENT_LOOP_GROUP_POOL;
   private ObjectPool<? extends EventLoopGroup> workerEventLoopGroupPool =
@@ -221,7 +221,7 @@ public final class NettyServerBuilder extends AbstractServerImplBuilder<NettySer
    */
   public NettyServerBuilder channelType(Class<? extends ServerChannel> channelType) {
     checkNotNull(channelType, "channelType");
-    return channelFactory(new ReflectiveChannelFactory<>(channelType));
+    return channelFactory(new ReflectiveChannelFactory<ServerChannel>(channelType));
   }
 
   /**
@@ -290,7 +290,7 @@ public final class NettyServerBuilder extends AbstractServerImplBuilder<NettySer
    */
   public NettyServerBuilder bossEventLoopGroup(EventLoopGroup group) {
     if (group != null) {
-      return bossEventLoopGroupPool(new FixedObjectPool<>(group));
+      return bossEventLoopGroupPool(new FixedObjectPool<EventLoopGroup>(group));
     }
     return bossEventLoopGroupPool(DEFAULT_BOSS_EVENT_LOOP_GROUP_POOL);
   }
@@ -326,7 +326,7 @@ public final class NettyServerBuilder extends AbstractServerImplBuilder<NettySer
    */
   public NettyServerBuilder workerEventLoopGroup(EventLoopGroup group) {
     if (group != null) {
-      return workerEventLoopGroupPool(new FixedObjectPool<>(group));
+      return workerEventLoopGroupPool(new FixedObjectPool<EventLoopGroup>(group));
     }
     return workerEventLoopGroupPool(DEFAULT_WORKER_EVENT_LOOP_GROUP_POOL);
   }
@@ -630,7 +630,7 @@ public final class NettyServerBuilder extends AbstractServerImplBuilder<NettySer
     ProtocolNegotiator negotiator = protocolNegotiatorFactory.newNegotiator(
         this.serverImplBuilder.getExecutorPool());
 
-    List<NettyServer> transportServers = new ArrayList<>(listenAddresses.size());
+    List<NettyServer> transportServers = new ArrayList<NettyServer>(listenAddresses.size());
     for (SocketAddress listenAddress : listenAddresses) {
       NettyServer transportServer = new NettyServer(
           listenAddress, channelFactory, channelOptions, childChannelOptions,

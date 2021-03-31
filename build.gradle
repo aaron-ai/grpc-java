@@ -11,6 +11,7 @@ import net.ltgt.gradle.errorprone.CheckSeverity
 subprojects {
     apply plugin: "checkstyle"
     apply plugin: "idea"
+    apply plugin: 'maven'
     apply plugin: "signing"
     apply plugin: "jacoco"
 
@@ -324,8 +325,8 @@ subprojects {
     }
 
     plugins.withId("java") {
-        sourceCompatibility = 1.7
-        targetCompatibility = 1.7
+        sourceCompatibility = 1.6
+        targetCompatibility = 1.6
 
         dependencies {
             testImplementation libraries.junit,

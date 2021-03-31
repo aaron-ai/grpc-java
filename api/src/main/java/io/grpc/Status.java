@@ -238,7 +238,7 @@ public final class Status {
   private static final List<Status> STATUS_LIST = buildStatusList();
 
   private static List<Status> buildStatusList() {
-    TreeMap<Integer, Status> canonicalizer = new TreeMap<>();
+    TreeMap<Integer, Status> canonicalizer = new TreeMap<Integer, Status>();
     for (Code code : Code.values()) {
       Status replaced = canonicalizer.put(code.value(), new Status(code));
       if (replaced != null) {
@@ -246,7 +246,7 @@ public final class Status {
             + replaced.getCode().name() + " & " + code.name());
       }
     }
-    return Collections.unmodifiableList(new ArrayList<>(canonicalizer.values()));
+    return Collections.unmodifiableList(new ArrayList<Status>(canonicalizer.values()));
   }
 
   // A pseudo-enum of Status instances mapped 1:1 with values in Code. This simplifies construction

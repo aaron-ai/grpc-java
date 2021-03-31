@@ -48,7 +48,7 @@ final class PersistentHashArrayMappedTrie {
    */
   static <K,V> Node<K,V> put(Node<K,V> root, K key, V value) {
     if (root == null) {
-      return new Leaf<>(key, value);
+      return new Leaf<K, V>(key, value);
     }
     return root.put(key, value, key.hashCode(), 0);
   }
@@ -84,13 +84,13 @@ final class PersistentHashArrayMappedTrie {
       if (thisHash != hash) {
         // Insert
         return CompressedIndex.combine(
-            new Leaf<>(key, value), hash, this, thisHash, bitsConsumed);
+            new Leaf<K, V>(key, value), hash, this, thisHash, bitsConsumed);
       } else if (this.key == key) {
         // Replace
-        return new Leaf<>(key, value);
+        return new Leaf<K, V>(key, value);
       } else {
         // Hash collision
-        return new CollisionLeaf<>(this.key, this.value, key, value);
+        return new CollisionLeaf<K, V>(this.key, this.value, key, value);
       }
     }
 
@@ -143,21 +143,21 @@ final class PersistentHashArrayMappedTrie {
       if (thisHash != hash) {
         // Insert
         return CompressedIndex.combine(
-            new Leaf<>(key, value), hash, this, thisHash, bitsConsumed);
+            new Leaf<K, V>(key, value), hash, this, thisHash, bitsConsumed);
       } else if ((keyIndex = indexOfKey(key)) != -1) {
         // Replace
         K[] newKeys = Arrays.copyOf(keys, keys.length);
         V[] newValues = Arrays.copyOf(values, keys.length);
         newKeys[keyIndex] = key;
         newValues[keyIndex] = value;
-        return new CollisionLeaf<>(newKeys, newValues);
+        return new CollisionLeaf<K, V>(newKeys, newValues);
       } else {
         // Yet another hash collision
         K[] newKeys = Arrays.copyOf(keys, keys.length + 1);
         V[] newValues = Arrays.copyOf(values, keys.length + 1);
         newKeys[keys.length] = key;
         newValues[keys.length] = value;
-        return new CollisionLeaf<>(newKeys, newValues);
+        return new CollisionLeaf<K, V>(newKeys, newValues);
       }
     }
 
@@ -223,14 +223,14 @@ final class PersistentHashArrayMappedTrie {
         @SuppressWarnings("unchecked")
         Node<K,V>[] newValues = (Node<K,V>[]) new Node<?,?>[values.length + 1];
         System.arraycopy(values, 0, newValues, 0, compressedIndex);
-        newValues[compressedIndex] = new Leaf<>(key, value);
+        newValues[compressedIndex] = new Leaf<K, V>(key, value);
         System.arraycopy(
             values,
             compressedIndex,
             newValues,
             compressedIndex + 1,
             values.length - compressedIndex);
-        return new CompressedIndex<>(newBitmap, newValues, size() + 1);
+        return new CompressedIndex<K, V>(newBitmap, newValues, size() + 1);
       } else {
         // Replace
         Node<K,V>[] newValues = Arrays.copyOf(values, values.length);
@@ -239,7 +239,7 @@ final class PersistentHashArrayMappedTrie {
         int newSize = size();
         newSize += newValues[compressedIndex].size();
         newSize -= values[compressedIndex].size();
-        return new CompressedIndex<>(bitmap, newValues, newSize);
+        return new CompressedIndex<K, V>(bitmap, newValues, newSize);
       }
     }
 
@@ -252,7 +252,7 @@ final class PersistentHashArrayMappedTrie {
         Node<K,V> node = combine(node1, hash1, node2, hash2, bitsConsumed + BITS);
         @SuppressWarnings("unchecked")
         Node<K,V>[] values = (Node<K,V>[]) new Node<?,?>[] {node};
-        return new CompressedIndex<>(indexBit1, values, node.size());
+        return new CompressedIndex<K, V>(indexBit1, values, node.size());
       } else {
         // Make node1 the smallest
         if (uncompressedIndex(hash1, bitsConsumed) > uncompressedIndex(hash2, bitsConsumed)) {
@@ -262,7 +262,7 @@ final class PersistentHashArrayMappedTrie {
         }
         @SuppressWarnings("unchecked")
         Node<K,V>[] values = (Node<K,V>[]) new Node<?,?>[] {node1, node2};
-        return new CompressedIndex<>(indexBit1 | indexBit2, values, node1.size() + node2.size());
+        return new CompressedIndex<K, V>(indexBit1 | indexBit2, values, node1.size() + node2.size());
       }
     }
 

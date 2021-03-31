@@ -53,7 +53,7 @@ final class MigratingThreadDeframer implements ThreadOptimizedDeframer {
   @GuardedBy("lock")
   private boolean deframerOnTransportThread;
   @GuardedBy("lock")
-  private final Queue<Op> opQueue = new ArrayDeque<>();
+  private final Queue<Op> opQueue = new ArrayDeque<Op>();
   @GuardedBy("lock")
   private boolean messageProducerEnqueued;
 

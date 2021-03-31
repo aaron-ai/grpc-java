@@ -78,7 +78,7 @@ public final class JsonParser {
 
   private static Map<String, ?> parseJsonObject(JsonReader jr) throws IOException {
     jr.beginObject();
-    Map<String, Object> obj = new LinkedHashMap<>();
+    Map<String, Object> obj = new LinkedHashMap<String, Object>();
     while (jr.hasNext()) {
       String name = jr.nextName();
       Object value = parseRecursive(jr);
@@ -91,7 +91,7 @@ public final class JsonParser {
 
   private static List<?> parseJsonArray(JsonReader jr) throws IOException {
     jr.beginArray();
-    List<Object> array = new ArrayList<>();
+    List<Object> array = new ArrayList<Object>();
     while (jr.hasNext()) {
       Object value = parseRecursive(jr);
       array.add(value);

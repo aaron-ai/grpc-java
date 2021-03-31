@@ -29,7 +29,7 @@ final class ThreadLocalContextStorage extends Context.Storage {
    * Currently bound context.
    */
   // VisibleForTesting
-  static final ThreadLocal<Context> localContext = new ThreadLocal<>();
+  static final ThreadLocal<Context> localContext = new ThreadLocal<Context>();
 
   @Override
   public Context doAttach(Context toAttach) {

@@ -179,7 +179,7 @@ public final class ClientCalls {
   // TODO(louiscryan): Not clear if we want to use this idiom for 'simple' stubs.
   public static <ReqT, RespT> Iterator<RespT> blockingServerStreamingCall(
       ClientCall<ReqT, RespT> call, ReqT req) {
-    BlockingResponseStream<RespT> result = new BlockingResponseStream<>(call);
+    BlockingResponseStream<RespT> result = new BlockingResponseStream<RespT>(call);
     asyncUnaryRequestCall(call, req, result.listener());
     return result;
   }
@@ -200,7 +200,7 @@ public final class ClientCalls {
     ClientCall<ReqT, RespT> call = channel.newCall(method,
         callOptions.withOption(ClientCalls.STUB_TYPE_OPTION, StubType.BLOCKING)
             .withExecutor(executor));
-    BlockingResponseStream<RespT> result = new BlockingResponseStream<>(call, executor);
+    BlockingResponseStream<RespT> result = new BlockingResponseStream<RespT>(call, executor);
     asyncUnaryRequestCall(call, req, result.listener());
     return result;
   }
@@ -214,8 +214,8 @@ public final class ClientCalls {
    */
   public static <ReqT, RespT> ListenableFuture<RespT> futureUnaryCall(
       ClientCall<ReqT, RespT> call, ReqT req) {
-    GrpcFuture<RespT> responseFuture = new GrpcFuture<>(call);
-    asyncUnaryRequestCall(call, req, new UnaryStreamToFuture<>(responseFuture));
+    GrpcFuture<RespT> responseFuture = new GrpcFuture<RespT>(call);
+    asyncUnaryRequestCall(call, req, new UnaryStreamToFuture<RespT>(responseFuture));
     return responseFuture;
   }
 
@@ -294,9 +294,9 @@ public final class ClientCalls {
     asyncUnaryRequestCall(
         call,
         req,
-        new StreamObserverToCallListenerAdapter<>(
+        new StreamObserverToCallListenerAdapter<ReqT, RespT>(
             responseObserver,
-            new CallToStreamObserverAdapter<>(call, streamingResponse)));
+            new CallToStreamObserverAdapter<ReqT>(call, streamingResponse)));
   }
 
   private static <ReqT, RespT> void asyncUnaryRequestCall(
@@ -318,11 +318,11 @@ public final class ClientCalls {
       ClientCall<ReqT, RespT> call,
       StreamObserver<RespT> responseObserver,
       boolean streamingResponse) {
-    CallToStreamObserverAdapter<ReqT> adapter = new CallToStreamObserverAdapter<>(
+    CallToStreamObserverAdapter<ReqT> adapter = new CallToStreamObserverAdapter<ReqT>(
         call, streamingResponse);
     startCall(
         call,
-        new StreamObserverToCallListenerAdapter<>(responseObserver, adapter));
+        new StreamObserverToCallListenerAdapter<ReqT, RespT>(responseObserver, adapter));
     return adapter;
   }
 
@@ -579,7 +579,7 @@ public final class ClientCalls {
   private static final class BlockingResponseStream<T> implements Iterator<T> {
     // Due to flow control, only needs to hold up to 3 items: 2 for value, 1 for close.
     // (2 for value, not 1, because of early request() in next())
-    private final BlockingQueue<Object> buffer = new ArrayBlockingQueue<>(3);
+    private final BlockingQueue<Object> buffer = new ArrayBlockingQueue<Object>(3);
     private final StartableListener<T> listener = new QueuingListener();
     private final ClientCall<?, T> call;
     /** May be null. */

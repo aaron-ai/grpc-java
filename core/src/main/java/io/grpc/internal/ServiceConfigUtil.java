@@ -280,7 +280,7 @@ public final class ServiceConfigUtil {
       "loadBalancingPolicy": "ROUND_ROBIN"  // The deprecated policy key
     }
     */
-    List<Map<String, ?>> lbConfigs = new ArrayList<>();
+    List<Map<String, ?>> lbConfigs = new ArrayList<Map<String, ?>>();
     String loadBalancingConfigKey = "loadBalancingConfig";
     if (serviceConfig.containsKey(loadBalancingConfigKey)) {
       lbConfigs.addAll(JsonUtil.getListOfObjects(
@@ -321,7 +321,7 @@ public final class ServiceConfigUtil {
     if (list == null) {
       return null;
     }
-    ArrayList<LbConfig> result = new ArrayList<>();
+    ArrayList<LbConfig> result = new ArrayList<LbConfig>();
     for (Map<String, ?> rawChildPolicy : list) {
       result.add(unwrapLoadBalancingConfig(rawChildPolicy));
     }
@@ -335,7 +335,7 @@ public final class ServiceConfigUtil {
    */
   public static ConfigOrError selectLbPolicyFromList(
       List<LbConfig> lbConfigs, LoadBalancerRegistry lbRegistry) {
-    List<String> policiesTried = new ArrayList<>();
+    List<String> policiesTried = new ArrayList<String>();
     for (LbConfig lbConfig : lbConfigs) {
       String policy = lbConfig.getPolicyName();
       LoadBalancerProvider provider = lbRegistry.getProvider(policy);

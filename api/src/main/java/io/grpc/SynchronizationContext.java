@@ -61,8 +61,8 @@ import javax.annotation.concurrent.ThreadSafe;
 public final class SynchronizationContext implements Executor {
   private final UncaughtExceptionHandler uncaughtExceptionHandler;
 
-  private final Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
-  private final AtomicReference<Thread> drainingThread = new AtomicReference<>();
+  private final Queue<Runnable> queue = new ConcurrentLinkedQueue<Runnable>();
+  private final AtomicReference<Thread> drainingThread = new AtomicReference<Thread>();
 
   /**
    * Creates a SynchronizationContext.

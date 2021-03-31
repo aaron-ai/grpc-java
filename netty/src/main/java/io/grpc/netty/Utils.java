@@ -108,7 +108,7 @@ class Utils {
     // Decide default channel types and EventLoopGroup based on Epoll availability
     if (isEpollAvailable()) {
       DEFAULT_CLIENT_CHANNEL_TYPE = epollChannelType();
-      DEFAULT_SERVER_CHANNEL_FACTORY = new ReflectiveChannelFactory<>(epollServerChannelType());
+      DEFAULT_SERVER_CHANNEL_FACTORY = new ReflectiveChannelFactory<ServerChannel>(epollServerChannelType());
       EPOLL_EVENT_LOOP_GROUP_CONSTRUCTOR = epollEventLoopGroupConstructor();
       DEFAULT_BOSS_EVENT_LOOP_GROUP
         = new DefaultEventLoopGroupResource(1, "grpc-default-boss-ELG", EventLoopGroupType.EPOLL);

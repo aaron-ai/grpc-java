@@ -79,7 +79,7 @@ public final class NettyChannelBuilder extends
   private static final long AS_LARGE_AS_INFINITE = TimeUnit.DAYS.toNanos(1000L);
 
   private static final ChannelFactory<? extends Channel> DEFAULT_CHANNEL_FACTORY =
-      new ReflectiveChannelFactory<>(Utils.DEFAULT_CLIENT_CHANNEL_TYPE);
+      new ReflectiveChannelFactory<Channel>(Utils.DEFAULT_CLIENT_CHANNEL_TYPE);
   private static final ObjectPool<? extends EventLoopGroup> DEFAULT_EVENT_LOOP_GROUP_POOL =
       SharedResourcePool.forResource(Utils.DEFAULT_WORKER_EVENT_LOOP_GROUP);
 
@@ -93,7 +93,7 @@ public final class NettyChannelBuilder extends
 
   private final ManagedChannelImplBuilder managedChannelImplBuilder;
   private TransportTracer.Factory transportTracerFactory = TransportTracer.getDefaultFactory();
-  private final Map<ChannelOption<?>, Object> channelOptions = new HashMap<>();
+  private final Map<ChannelOption<?>, Object> channelOptions = new HashMap<ChannelOption<?>, Object>();
   private ChannelFactory<? extends Channel> channelFactory = DEFAULT_CHANNEL_FACTORY;
   private ObjectPool<? extends EventLoopGroup> eventLoopGroupPool = DEFAULT_EVENT_LOOP_GROUP_POOL;
   private boolean autoFlowControl = DEFAULT_AUTO_FLOW_CONTROL;
@@ -239,7 +239,7 @@ public final class NettyChannelBuilder extends
    */
   public NettyChannelBuilder channelType(Class<? extends Channel> channelType) {
     checkNotNull(channelType, "channelType");
-    return channelFactory(new ReflectiveChannelFactory<>(channelType));
+    return channelFactory(new ReflectiveChannelFactory<Channel>(channelType));
   }
 
   /**
@@ -300,7 +300,7 @@ public final class NettyChannelBuilder extends
    */
   public NettyChannelBuilder eventLoopGroup(@Nullable EventLoopGroup eventLoopGroup) {
     if (eventLoopGroup != null) {
-      return eventLoopGroupPool(new FixedObjectPool<>(eventLoopGroup));
+      return eventLoopGroupPool(new FixedObjectPool<EventLoopGroup>(eventLoopGroup));
     }
     return eventLoopGroupPool(DEFAULT_EVENT_LOOP_GROUP_POOL);
   }

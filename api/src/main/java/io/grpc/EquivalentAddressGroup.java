@@ -62,7 +62,7 @@ public final class EquivalentAddressGroup {
    */
   public EquivalentAddressGroup(List<SocketAddress> addrs, @Attr Attributes attrs) {
     Preconditions.checkArgument(!addrs.isEmpty(), "addrs is empty");
-    this.addrs = Collections.unmodifiableList(new ArrayList<>(addrs));
+    this.addrs = Collections.unmodifiableList(new ArrayList<SocketAddress>(addrs));
     this.attrs = Preconditions.checkNotNull(attrs, "attrs");
     // Attributes may contain mutable objects, which means Attributes' hashCode may change over
     // time, thus we don't cache Attributes' hashCode.

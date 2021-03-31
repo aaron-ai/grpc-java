@@ -264,7 +264,7 @@ abstract class RetriableStream<ReqT> implements ClientStream {
 
         int stop = Math.min(index + chunk, savedState.buffer.size());
         if (list == null) {
-          list = new ArrayList<>(savedState.buffer.subList(index, stop));
+          list = new ArrayList<BufferEntry>(savedState.buffer.subList(index, stop));
         } else {
           list.clear();
           list.addAll(savedState.buffer.subList(index, stop));
@@ -1058,7 +1058,7 @@ abstract class RetriableStream<ReqT> implements ClientStream {
         // optimize for 0-retry, which is most of the cases.
         drainedSubstreams = Collections.singletonList(substream);
       } else {
-        drainedSubstreams = new ArrayList<>(this.drainedSubstreams);
+        drainedSubstreams = new ArrayList<Substream>(this.drainedSubstreams);
         drainedSubstreams.add(substream);
         drainedSubstreams = Collections.unmodifiableCollection(drainedSubstreams);
       }
@@ -1083,7 +1083,7 @@ abstract class RetriableStream<ReqT> implements ClientStream {
     State substreamClosed(Substream substream) {
       substream.closed = true;
       if (this.drainedSubstreams.contains(substream)) {
-        Collection<Substream> drainedSubstreams = new ArrayList<>(this.drainedSubstreams);
+        Collection<Substream> drainedSubstreams = new ArrayList<Substream>(this.drainedSubstreams);
         drainedSubstreams.remove(substream);
         drainedSubstreams = Collections.unmodifiableCollection(drainedSubstreams);
         return new State(
@@ -1140,7 +1140,7 @@ abstract class RetriableStream<ReqT> implements ClientStream {
       if (this.activeHedges == null) {
         activeHedges = Collections.singleton(substream);
       } else {
-        activeHedges = new ArrayList<>(this.activeHedges);
+        activeHedges = new ArrayList<Substream>(this.activeHedges);
         activeHedges.add(substream);
         activeHedges = Collections.unmodifiableCollection(activeHedges);
       }
@@ -1155,7 +1155,7 @@ abstract class RetriableStream<ReqT> implements ClientStream {
     // GuardedBy RetriableStream.lock
     // The method is only called in Sublistener.closed()
     State removeActiveHedge(Substream substream) {
-      Collection<Substream> activeHedges = new ArrayList<>(this.activeHedges);
+      Collection<Substream> activeHedges = new ArrayList<Substream>(this.activeHedges);
       activeHedges.remove(substream);
       activeHedges = Collections.unmodifiableCollection(activeHedges);
 
@@ -1168,7 +1168,7 @@ abstract class RetriableStream<ReqT> implements ClientStream {
     // GuardedBy RetriableStream.lock
     // The method is only called for transparent retry.
     State replaceActiveHedge(Substream oldOne, Substream newOne) {
-      Collection<Substream> activeHedges = new ArrayList<>(this.activeHedges);
+      Collection<Substream> activeHedges = new ArrayList<Substream>(this.activeHedges);
       activeHedges.remove(oldOne);
       activeHedges.add(newOne);
       activeHedges = Collections.unmodifiableCollection(activeHedges);

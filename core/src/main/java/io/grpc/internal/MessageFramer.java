@@ -383,7 +383,7 @@ public class MessageFramer implements Framer {
    * {@link OutputStream}.
    */
   private final class BufferChainOutputStream extends OutputStream {
-    private final List<WritableBuffer> bufferList = new ArrayList<>();
+    private final List<WritableBuffer> bufferList = new ArrayList<WritableBuffer>();
     private WritableBuffer current;
 
     /**

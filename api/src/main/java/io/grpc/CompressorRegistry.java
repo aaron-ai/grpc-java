@@ -53,7 +53,7 @@ public final class CompressorRegistry {
 
   @VisibleForTesting
   CompressorRegistry(Compressor ...cs) {
-    compressors = new ConcurrentHashMap<>();
+    compressors = new ConcurrentHashMap<String, Compressor>();
     for (Compressor c : cs) {
       compressors.put(c.getMessageEncoding(), c);
     }

@@ -51,7 +51,7 @@ public final class MethodDescriptor<ReqT, RespT> {
 
   // Must be set to InternalKnownTransport.values().length
   // Not referenced to break the dependency.
-  private final AtomicReferenceArray<Object> rawMethodNames = new AtomicReferenceArray<>(2);
+  private final AtomicReferenceArray<Object> rawMethodNames = new AtomicReferenceArray<Object>(2);
 
   /**
    * Gets the cached "raw" method name for this Method Descriptor.  The raw name is transport
@@ -208,7 +208,7 @@ public final class MethodDescriptor<ReqT, RespT> {
       MethodType type, String fullMethodName,
       Marshaller<RequestT> requestMarshaller,
       Marshaller<ResponseT> responseMarshaller) {
-    return new MethodDescriptor<>(
+    return new MethodDescriptor<RequestT, ResponseT>(
         type, fullMethodName, requestMarshaller, responseMarshaller, null, false, false, false);
   }
 
@@ -602,7 +602,7 @@ public final class MethodDescriptor<ReqT, RespT> {
      */
     @CheckReturnValue
     public MethodDescriptor<ReqT, RespT> build() {
-      return new MethodDescriptor<>(
+      return new MethodDescriptor<ReqT, RespT>(
           type,
           fullMethodName,
           requestMarshaller,

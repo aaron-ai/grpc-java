@@ -41,7 +41,7 @@ public final class ManagedChannelRegistry {
   private static ManagedChannelRegistry instance;
 
   @GuardedBy("this")
-  private final LinkedHashSet<ManagedChannelProvider> allProviders = new LinkedHashSet<>();
+  private final LinkedHashSet<ManagedChannelProvider> allProviders = new LinkedHashSet<ManagedChannelProvider>();
   /** Immutable, sorted version of {@code allProviders}. Is replaced instead of mutating. */
   @GuardedBy("this")
   private List<ManagedChannelProvider> effectiveProviders = Collections.emptyList();
@@ -76,7 +76,7 @@ public final class ManagedChannelRegistry {
   }
 
   private synchronized void refreshProviders() {
-    List<ManagedChannelProvider> providers = new ArrayList<>(allProviders);
+    List<ManagedChannelProvider> providers = new ArrayList<ManagedChannelProvider>(allProviders);
     // Sort descending based on priority.
     // sort() must be stable, as we prefer first-registered providers
     Collections.sort(providers, Collections.reverseOrder(new Comparator<ManagedChannelProvider>() {
@@ -129,7 +129,7 @@ public final class ManagedChannelRegistry {
     // Class.forName(String) is used to remove the need for ProGuard configuration. Note that
     // ProGuard does not detect usages of Class.forName(String, boolean, ClassLoader):
     // https://sourceforge.net/p/proguard/bugs/418/
-    List<Class<?>> list = new ArrayList<>();
+    List<Class<?>> list = new ArrayList<Class<?>>();
     try {
       list.add(Class.forName("io.grpc.okhttp.OkHttpChannelProvider"));
     } catch (ClassNotFoundException e) {

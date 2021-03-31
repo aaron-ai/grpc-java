@@ -57,7 +57,7 @@ final class RoundRobinLoadBalancer extends LoadBalancer {
 
   private final Helper helper;
   private final Map<EquivalentAddressGroup, Subchannel> subchannels =
-      new HashMap<>();
+      new HashMap<EquivalentAddressGroup, Subchannel>();
   private final Random random;
 
   private ConnectivityState currentState;
@@ -95,7 +95,7 @@ final class RoundRobinLoadBalancer extends LoadBalancer {
           // after creation but since we can mutate the values we leverage that and set
           // AtomicReference which will allow mutating state info for given channel.
           .set(STATE_INFO,
-              new Ref<>(ConnectivityStateInfo.forNonError(IDLE)));
+              new Ref<ConnectivityStateInfo>(ConnectivityStateInfo.forNonError(IDLE)));
 
       final Subchannel subchannel = checkNotNull(
           helper.createSubchannel(CreateSubchannelArgs.newBuilder()
@@ -113,7 +113,7 @@ final class RoundRobinLoadBalancer extends LoadBalancer {
       subchannel.requestConnection();
     }
 
-    ArrayList<Subchannel> removedSubchannels = new ArrayList<>();
+    ArrayList<Subchannel> removedSubchannels = new ArrayList<Subchannel>();
     for (EquivalentAddressGroup addressGroup : removedAddrs) {
       removedSubchannels.add(subchannels.remove(addressGroup));
     }
@@ -214,7 +214,7 @@ final class RoundRobinLoadBalancer extends LoadBalancer {
    */
   private static List<Subchannel> filterNonFailingSubchannels(
       Collection<Subchannel> subchannels) {
-    List<Subchannel> readySubchannels = new ArrayList<>(subchannels.size());
+    List<Subchannel> readySubchannels = new ArrayList<Subchannel>(subchannels.size());
     for (Subchannel subchannel : subchannels) {
       if (isReady(subchannel)) {
         readySubchannels.add(subchannel);
@@ -229,7 +229,7 @@ final class RoundRobinLoadBalancer extends LoadBalancer {
    */
   private static Map<EquivalentAddressGroup, EquivalentAddressGroup> stripAttrs(
       List<EquivalentAddressGroup> groupList) {
-    Map<EquivalentAddressGroup, EquivalentAddressGroup> addrs = new HashMap<>(groupList.size() * 2);
+    Map<EquivalentAddressGroup, EquivalentAddressGroup> addrs = new HashMap<EquivalentAddressGroup, EquivalentAddressGroup>(groupList.size() * 2);
     for (EquivalentAddressGroup group : groupList) {
       addrs.put(stripAttrs(group), group);
     }
@@ -256,7 +256,7 @@ final class RoundRobinLoadBalancer extends LoadBalancer {
   }
 
   private static <T> Set<T> setsDifference(Set<T> a, Set<T> b) {
-    Set<T> aCopy = new HashSet<>(a);
+    Set<T> aCopy = new HashSet<T>(a);
     aCopy.removeAll(b);
     return aCopy;
   }
@@ -315,7 +315,7 @@ final class RoundRobinLoadBalancer extends LoadBalancer {
       ReadyPicker other = (ReadyPicker) picker;
       // the lists cannot contain duplicate subchannels
       return other == this
-          || (list.size() == other.list.size() && new HashSet<>(list).containsAll(other.list));
+          || (list.size() == other.list.size() && new HashSet<Subchannel>(list).containsAll(other.list));
     }
   }
 

@@ -134,7 +134,7 @@ public final class Attributes {
      */
     @Deprecated
     public static <T> Key<T> of(String debugString) {
-      return new Key<>(debugString);
+      return new Key<T>(debugString);
     }
 
     /**
@@ -145,7 +145,7 @@ public final class Attributes {
      * @return Key object
      */
     public static <T> Key<T> create(String debugString) {
-      return new Key<>(debugString);
+      return new Key<T>(debugString);
     }
   }
 
@@ -221,7 +221,7 @@ public final class Attributes {
 
     private Map<Key<?>, Object> data(int size) {
       if (newdata == null) {
-        newdata = new IdentityHashMap<>(size);
+        newdata = new IdentityHashMap<Key<?>, Object>(size);
       }
       return newdata;
     }
@@ -241,7 +241,7 @@ public final class Attributes {
     @ExperimentalApi("https://github.com/grpc/grpc-java/issues/5777")
     public <T> Builder discard(Key<T> key) {
       if (base.data.containsKey(key)) {
-        Map<Key<?>, Object> newBaseData = new IdentityHashMap<>(base.data);
+        Map<Key<?>, Object> newBaseData = new IdentityHashMap<Key<?>, Object>(base.data);
         newBaseData.remove(key);
         base = new Attributes(newBaseData);
       }

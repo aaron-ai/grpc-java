@@ -200,7 +200,7 @@ final class OobChannel extends ManagedChannel implements InternalInstrumented<Ch
   @Override
   public <RequestT, ResponseT> ClientCall<RequestT, ResponseT> newCall(
       MethodDescriptor<RequestT, ResponseT> methodDescriptor, CallOptions callOptions) {
-    return new ClientCallImpl<>(methodDescriptor,
+    return new ClientCallImpl<RequestT, ResponseT>(methodDescriptor,
         callOptions.getExecutor() == null ? executor : callOptions.getExecutor(),
         callOptions, transportProvider, deadlineCancellationExecutor, channelCallsTracer, null);
   }

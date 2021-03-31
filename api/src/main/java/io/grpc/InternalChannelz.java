@@ -50,16 +50,16 @@ public final class InternalChannelz {
   private static final InternalChannelz INSTANCE = new InternalChannelz();
 
   private final ConcurrentNavigableMap<Long, InternalInstrumented<ServerStats>> servers
-      = new ConcurrentSkipListMap<>();
+      = new ConcurrentSkipListMap<Long, InternalInstrumented<ServerStats>>();
   private final ConcurrentNavigableMap<Long, InternalInstrumented<ChannelStats>> rootChannels
-      = new ConcurrentSkipListMap<>();
+      = new ConcurrentSkipListMap<Long, InternalInstrumented<ChannelStats>>();
   private final ConcurrentMap<Long, InternalInstrumented<ChannelStats>> subchannels
-      = new ConcurrentHashMap<>();
+      = new ConcurrentHashMap<Long, InternalInstrumented<ChannelStats>>();
   // An InProcessTransport can appear in both otherSockets and perServerSockets simultaneously
   private final ConcurrentMap<Long, InternalInstrumented<SocketStats>> otherSockets
-      = new ConcurrentHashMap<>();
+      = new ConcurrentHashMap<Long, InternalInstrumented<SocketStats>>();
   private final ConcurrentMap<Long, ServerSocketMap> perServerSockets
-      = new ConcurrentHashMap<>();
+      = new ConcurrentHashMap<Long, ServerSocketMap>();
 
   // A convenience class to avoid deeply nested types.
   private static final class ServerSocketMap
@@ -144,7 +144,7 @@ public final class InternalChannelz {
   /** Returns a {@link RootChannelList}. */
   public RootChannelList getRootChannels(long fromId, int maxPageSize) {
     List<InternalInstrumented<ChannelStats>> channelList
-        = new ArrayList<>();
+        = new ArrayList<InternalInstrumented<ChannelStats>>();
     Iterator<InternalInstrumented<ChannelStats>> iterator
         = rootChannels.tailMap(fromId).values().iterator();
 
@@ -169,7 +169,7 @@ public final class InternalChannelz {
   /** Returns a server list. */
   public ServerList getServers(long fromId, int maxPageSize) {
     List<InternalInstrumented<ServerStats>> serverList
-        = new ArrayList<>(maxPageSize);
+        = new ArrayList<InternalInstrumented<ServerStats>>(maxPageSize);
     Iterator<InternalInstrumented<ServerStats>> iterator
         = servers.tailMap(fromId).values().iterator();
 
@@ -186,7 +186,7 @@ public final class InternalChannelz {
     if (serverSockets == null) {
       return null;
     }
-    List<InternalWithLogId> socketList = new ArrayList<>(maxPageSize);
+    List<InternalWithLogId> socketList = new ArrayList<InternalWithLogId>(maxPageSize);
     Iterator<InternalInstrumented<SocketStats>> iterator
         = serverSockets.tailMap(fromId).values().iterator();
     while (socketList.size() < maxPageSize && iterator.hasNext()) {
@@ -311,7 +311,7 @@ public final class InternalChannelz {
       private long callsSucceeded;
       private long callsFailed;
       private long lastCallStartedNanos;
-      public List<InternalInstrumented<SocketStats>> listenSockets = new ArrayList<>();
+      public List<InternalInstrumented<SocketStats>> listenSockets = new ArrayList<InternalInstrumented<SocketStats>>();
 
       public Builder setCallsStarted(long callsStarted) {
         this.callsStarted = callsStarted;
@@ -505,7 +505,7 @@ public final class InternalChannelz {
       }
 
       public Builder setEvents(List<Event> events) {
-        this.events = Collections.unmodifiableList(new ArrayList<>(events));
+        this.events = Collections.unmodifiableList(new ArrayList<Event>(events));
         return this;
       }
 
@@ -992,11 +992,11 @@ public final class InternalChannelz {
       this.soTimeoutMillis = timeoutMillis;
       this.lingerSeconds = lingerSeconds;
       this.tcpInfo = tcpInfo;
-      this.others = Collections.unmodifiableMap(new HashMap<>(others));
+      this.others = Collections.unmodifiableMap(new HashMap<String, String>(others));
     }
 
     public static final class Builder {
-      private final Map<String, String> others = new HashMap<>();
+      private final Map<String, String> others = new HashMap<String, String>();
 
       private TcpInfo tcpInfo;
       private Integer timeoutMillis;

@@ -103,7 +103,7 @@ public final class ManagedChannelImplBuilder
 
   ObjectPool<? extends Executor> offloadExecutorPool = DEFAULT_EXECUTOR_POOL;
 
-  private final List<ClientInterceptor> interceptors = new ArrayList<>();
+  private final List<ClientInterceptor> interceptors = new ArrayList<ClientInterceptor>();
   final NameResolverRegistry nameResolverRegistry = NameResolverRegistry.getDefaultRegistry();
 
   // Access via getter, which may perform authority override as needed
@@ -294,7 +294,7 @@ public final class ManagedChannelImplBuilder
   @Override
   public ManagedChannelImplBuilder executor(Executor executor) {
     if (executor != null) {
-      this.executorPool = new FixedObjectPool<>(executor);
+      this.executorPool = new FixedObjectPool<Executor>(executor);
     } else {
       this.executorPool = DEFAULT_EXECUTOR_POOL;
     }
@@ -304,7 +304,7 @@ public final class ManagedChannelImplBuilder
   @Override
   public ManagedChannelImplBuilder offloadExecutor(Executor executor) {
     if (executor != null) {
-      this.offloadExecutorPool = new FixedObjectPool<>(executor);
+      this.offloadExecutorPool = new FixedObjectPool<Executor>(executor);
     } else {
       this.offloadExecutorPool = DEFAULT_EXECUTOR_POOL;
     }
@@ -475,7 +475,7 @@ public final class ManagedChannelImplBuilder
       return null;
     }
     // Not using ImmutableMap.Builder because of extra guava dependency for Android.
-    Map<String, Object> parsedMap = new LinkedHashMap<>();
+    Map<String, Object> parsedMap = new LinkedHashMap<String, Object>();
     for (Map.Entry<?, ?> entry : map.entrySet()) {
       checkArgument(
           entry.getKey() instanceof String,
@@ -505,7 +505,7 @@ public final class ManagedChannelImplBuilder
   }
 
   private static List<?> checkListEntryTypes(List<?> list) {
-    List<Object> parsedList = new ArrayList<>(list.size());
+    List<Object> parsedList = new ArrayList<Object>(list.size());
     for (Object value : list) {
       if (value == null) {
         parsedList.add(null);
@@ -619,7 +619,7 @@ public final class ManagedChannelImplBuilder
   @VisibleForTesting
   List<ClientInterceptor> getEffectiveInterceptors() {
     List<ClientInterceptor> effectiveInterceptors =
-        new ArrayList<>(this.interceptors);
+        new ArrayList<ClientInterceptor>(this.interceptors);
     temporarilyDisableRetry = false;
     if (statsEnabled) {
       temporarilyDisableRetry = true;
