@@ -59,13 +59,13 @@ final class ManagedChannelServiceConfig {
       @Nullable Object loadBalancingConfig,
       @Nullable Map<String, ?> healthCheckingConfig) {
     this.defaultMethodConfig = defaultMethodConfig;
-    this.serviceMethodMap = Collections.unmodifiableMap(new HashMap<>(serviceMethodMap));
-    this.serviceMap = Collections.unmodifiableMap(new HashMap<>(serviceMap));
+    this.serviceMethodMap = Collections.unmodifiableMap(new HashMap<String, MethodInfo>(serviceMethodMap));
+    this.serviceMap = Collections.unmodifiableMap(new HashMap<String, MethodInfo>(serviceMap));
     this.retryThrottling = retryThrottling;
     this.loadBalancingConfig = loadBalancingConfig;
     this.healthCheckingConfig =
         healthCheckingConfig != null
-            ? Collections.unmodifiableMap(new HashMap<>(healthCheckingConfig))
+            ? Collections.unmodifiableMap(new HashMap<String, Object>(healthCheckingConfig))
             : null;
   }
 
@@ -94,8 +94,8 @@ final class ManagedChannelServiceConfig {
     if (retryEnabled) {
       retryThrottling = ServiceConfigUtil.getThrottlePolicy(serviceConfig);
     }
-    Map<String, MethodInfo> serviceMethodMap = new HashMap<>();
-    Map<String, MethodInfo> serviceMap = new HashMap<>();
+    Map<String, MethodInfo> serviceMethodMap = new HashMap<String, MethodInfo>();
+    Map<String, MethodInfo> serviceMap = new HashMap<String, MethodInfo>();
     Map<String, ?> healthCheckingConfig =
         ServiceConfigUtil.getHealthCheckedService(serviceConfig);
 

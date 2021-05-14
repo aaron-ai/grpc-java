@@ -44,7 +44,7 @@ final class WriteBufferingAndExceptionHandler extends ChannelDuplexHandler {
   private static final Logger logger =
       Logger.getLogger(WriteBufferingAndExceptionHandler.class.getName());
 
-  private final Queue<ChannelWrite> bufferedWrites = new ArrayDeque<>();
+  private final Queue<ChannelWrite> bufferedWrites = new ArrayDeque<ChannelWrite>();
   private final ChannelHandler next;
   private boolean writing;
   private boolean flushRequested;

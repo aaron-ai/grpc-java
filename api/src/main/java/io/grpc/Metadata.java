@@ -306,7 +306,7 @@ public final class Metadata {
   public <T> Iterable<T> getAll(final Key<T> key) {
     for (int i = 0; i < size; i++) {
       if (bytesEqual(key.asciiName(), name(i))) {
-        return new IterableAt<>(key, i);
+        return new IterableAt<T>(key, i);
       }
     }
     return null;
@@ -322,7 +322,7 @@ public final class Metadata {
     if (isEmpty()) {
       return Collections.emptySet();
     }
-    Set<String> ks = new HashSet<>(size);
+    Set<String> ks = new HashSet<String>(size);
     for (int i = 0; i < size; i++) {
       ks.add(new String(name(i), 0 /* hibyte */));
     }
@@ -523,7 +523,7 @@ public final class Metadata {
   public void merge(Metadata other, Set<Key<?>> keys) {
     Preconditions.checkNotNull(other, "other");
     // Use ByteBuffer for equals and hashCode.
-    Map<ByteBuffer, Key<?>> asciiKeys = new HashMap<>(keys.size());
+    Map<ByteBuffer, Key<?>> asciiKeys = new HashMap<ByteBuffer, Key<?>>(keys.size());
     for (Key<?> key : keys) {
       asciiKeys.put(ByteBuffer.wrap(key.asciiName()), key);
     }
@@ -677,7 +677,7 @@ public final class Metadata {
      *     end with {@link #BINARY_HEADER_SUFFIX}.
      */
     public static <T> Key<T> of(String name, BinaryMarshaller<T> marshaller) {
-      return new BinaryKey<>(name, marshaller);
+      return new BinaryKey<T>(name, marshaller);
     }
 
     /**
@@ -688,7 +688,7 @@ public final class Metadata {
      */
     @ExperimentalApi("https://github.com/grpc/grpc-java/issues/6575")
     public static <T> Key<T> of(String name, BinaryStreamMarshaller<T> marshaller) {
-      return new LazyStreamBinaryKey<>(name, marshaller);
+      return new LazyStreamBinaryKey<T>(name, marshaller);
     }
 
     /**
@@ -702,11 +702,11 @@ public final class Metadata {
     }
 
     static <T> Key<T> of(String name, boolean pseudo, AsciiMarshaller<T> marshaller) {
-      return new AsciiKey<>(name, pseudo, marshaller);
+      return new AsciiKey<T>(name, pseudo, marshaller);
     }
 
     static <T> Key<T> of(String name, boolean pseudo, TrustedAsciiMarshaller<T> marshaller) {
-      return new TrustedAsciiKey<>(name, pseudo, marshaller);
+      return new TrustedAsciiKey<T>(name, pseudo, marshaller);
     }
 
     private final String originalName;
@@ -910,7 +910,7 @@ public final class Metadata {
     private volatile byte[] serialized;
 
     static <T> LazyValue<T> create(Key<T> key, T value) {
-      return new LazyValue<>(checkNotNull(getBinaryStreamMarshaller(key)), value);
+      return new LazyValue<T>(checkNotNull(getBinaryStreamMarshaller(key)), value);
     }
 
     /** A value set by the application. */

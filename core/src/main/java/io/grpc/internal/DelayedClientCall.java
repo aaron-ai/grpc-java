@@ -70,7 +70,7 @@ class DelayedClientCall<ReqT, RespT> extends ClientCall<ReqT, RespT> {
   @GuardedBy("this")
   private Status error;
   @GuardedBy("this")
-  private List<Runnable> pendingRunnables = new ArrayList<>();
+  private List<Runnable> pendingRunnables = new ArrayList<Runnable>();
   @GuardedBy("this")
   private DelayedListener<RespT> delayedListener;
 
@@ -164,7 +164,7 @@ class DelayedClientCall<ReqT, RespT> extends ClientCall<ReqT, RespT> {
       savedError = error;
       savedPassThrough = passThrough;
       if (!savedPassThrough) {
-        listener = delayedListener = new DelayedListener<>(listener);
+        listener = delayedListener = new DelayedListener<RespT>(listener);
       }
     }
     if (savedError != null) {
@@ -256,7 +256,7 @@ class DelayedClientCall<ReqT, RespT> extends ClientCall<ReqT, RespT> {
   private void drainPendingCalls() {
     assert realCall != null;
     assert !passThrough;
-    List<Runnable> toRun = new ArrayList<>();
+    List<Runnable> toRun = new ArrayList<Runnable>();
     DelayedListener<RespT> delayedListener ;
     while (true) {
       synchronized (this) {
@@ -412,7 +412,7 @@ class DelayedClientCall<ReqT, RespT> extends ClientCall<ReqT, RespT> {
     private final Listener<RespT> realListener;
     private volatile boolean passThrough;
     @GuardedBy("this")
-    private List<Runnable> pendingCallbacks = new ArrayList<>();
+    private List<Runnable> pendingCallbacks = new ArrayList<Runnable>();
 
     public DelayedListener(Listener<RespT> listener) {
       this.realListener = listener;
@@ -482,7 +482,7 @@ class DelayedClientCall<ReqT, RespT> extends ClientCall<ReqT, RespT> {
 
     void drainPendingCallbacks() {
       assert !passThrough;
-      List<Runnable> toRun = new ArrayList<>();
+      List<Runnable> toRun = new ArrayList<Runnable>();
       while (true) {
         synchronized (this) {
           if (pendingCallbacks.isEmpty()) {

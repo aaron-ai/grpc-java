@@ -46,7 +46,7 @@ public final class NameResolverRegistry {
   private final NameResolver.Factory factory = new NameResolverFactory();
 
   @GuardedBy("this")
-  private final LinkedHashSet<NameResolverProvider> allProviders = new LinkedHashSet<>();
+  private final LinkedHashSet<NameResolverProvider> allProviders = new LinkedHashSet<NameResolverProvider>();
   /** Immutable, sorted version of {@code allProviders}. Is replaced instead of mutating. */
   @GuardedBy("this")
   private List<NameResolverProvider> effectiveProviders = Collections.emptyList();
@@ -81,7 +81,7 @@ public final class NameResolverRegistry {
   }
 
   private synchronized void refreshProviders() {
-    List<NameResolverProvider> providers = new ArrayList<>(allProviders);
+    List<NameResolverProvider> providers = new ArrayList<NameResolverProvider>(allProviders);
     // Sort descending based on priority.
     // sort() must be stable, as we prefer first-registered providers
     Collections.sort(providers, Collections.reverseOrder(new Comparator<NameResolverProvider>() {
@@ -136,7 +136,7 @@ public final class NameResolverRegistry {
     // Class.forName(String) is used to remove the need for ProGuard configuration. Note that
     // ProGuard does not detect usages of Class.forName(String, boolean, ClassLoader):
     // https://sourceforge.net/p/proguard/bugs/418/
-    ArrayList<Class<?>> list = new ArrayList<>();
+    ArrayList<Class<?>> list = new ArrayList<Class<?>>();
     try {
       list.add(Class.forName("io.grpc.internal.DnsNameResolverProvider"));
     } catch (ClassNotFoundException e) {

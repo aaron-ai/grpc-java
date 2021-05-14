@@ -42,7 +42,7 @@ public final class ChoiceChannelCredentials extends ChannelCredentials {
         throw new NullPointerException();
       }
     }
-    return new ChoiceChannelCredentials(unmodifiableList(new ArrayList<>(Arrays.asList(creds))));
+    return new ChoiceChannelCredentials(unmodifiableList(new ArrayList<ChannelCredentials>(Arrays.asList(creds))));
   }
 
   private final List<ChannelCredentials> creds;
@@ -58,7 +58,7 @@ public final class ChoiceChannelCredentials extends ChannelCredentials {
 
   @Override
   public ChannelCredentials withoutBearerTokens() {
-    List<ChannelCredentials> credsWithoutTokens = new ArrayList<>();
+    List<ChannelCredentials> credsWithoutTokens = new ArrayList<ChannelCredentials>();
     for (ChannelCredentials cred : creds) {
       credsWithoutTokens.add(cred.withoutBearerTokens());
     }

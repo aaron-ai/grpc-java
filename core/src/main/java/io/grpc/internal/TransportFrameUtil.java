@@ -119,7 +119,7 @@ public final class TransportFrameUtil {
   }
 
   private static byte[][] serializeHeadersWithCommasInBin(byte[][] http2Headers, int resumeFrom) {
-    List<byte[]> headerList = new ArrayList<>(http2Headers.length + 10);
+    List<byte[]> headerList = new ArrayList<byte[]>(http2Headers.length + 10);
     for (int i = 0; i < resumeFrom; i++) {
       headerList.add(http2Headers[i]);
     }

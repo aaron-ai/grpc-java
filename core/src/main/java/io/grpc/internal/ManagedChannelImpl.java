@@ -218,7 +218,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
   // Must be mutated from syncContext
   // If any monitoring hook to be added later needs to get a snapshot of this Set, we could
   // switch to a ConcurrentHashMap.
-  private final Set<InternalSubchannel> subchannels = new HashSet<>(16, .75f);
+  private final Set<InternalSubchannel> subchannels = new HashSet<InternalSubchannel>(16, .75f);
 
   // Must be accessed from syncContext
   @Nullable
@@ -226,7 +226,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
   private final Object pendingCallsInUseObject = new Object();
 
   // Must be mutated from syncContext
-  private final Set<OobChannel> oobChannels = new HashSet<>(1, .75f);
+  private final Set<OobChannel> oobChannels = new HashSet<OobChannel>(1, .75f);
 
   // reprocess() must be run from syncContext
   private final DelayedClientTransport delayedTransport;
@@ -316,7 +316,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
         channelCallTracer.updateBuilder(builder);
         channelTracer.updateBuilder(builder);
         builder.setTarget(target).setState(channelStateManager.getState());
-        List<InternalWithLogId> children = new ArrayList<>();
+        List<InternalWithLogId> children = new ArrayList<InternalWithLogId>();
         children.addAll(subchannels);
         children.addAll(oobChannels);
         builder.setSubchannels(children);
@@ -571,7 +571,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
           }
         }
 
-        return new RetryStream<>();
+        return new RetryStream<Object>();
       }
     }
   }
@@ -899,7 +899,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
     // Reference to null if no config selector is available from resolution result
     // Reference must be set() from syncContext
     private final AtomicReference<InternalConfigSelector> configSelector =
-        new AtomicReference<>(INITIAL_PENDING_SELECTOR);
+        new AtomicReference<InternalConfigSelector>(INITIAL_PENDING_SELECTOR);
     // Set when the NameResolver is initially created. When we create a new NameResolver for the
     // same target, the new instance must have the same value.
     private final String authority;
@@ -908,7 +908,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
       @Override
       public <RequestT, ResponseT> ClientCall<RequestT, ResponseT> newCall(
           MethodDescriptor<RequestT, ResponseT> method, CallOptions callOptions) {
-        return new ClientCallImpl<>(
+        return new ClientCallImpl<RequestT, ResponseT>(
             method,
             getCallExecutor(callOptions),
             callOptions,
@@ -967,13 +967,13 @@ final class ManagedChannelImpl extends ManagedChannel implements
         };
       }
       Context context = Context.current();
-      final PendingCall<ReqT, RespT> pendingCall = new PendingCall<>(context, method, callOptions);
+      final PendingCall<ReqT, RespT> pendingCall = new PendingCall<ReqT, RespT>(context, method, callOptions);
       syncContext.execute(new Runnable() {
         @Override
         public void run() {
           if (configSelector.get() == INITIAL_PENDING_SELECTOR) {
             if (pendingCalls == null) {
-              pendingCalls = new LinkedHashSet<>();
+              pendingCalls = new LinkedHashSet<PendingCall<?, ?>>();
               inUseStateAggregator.updateObjectInUse(pendingCallsInUseObject, true);
             }
             pendingCalls.add(pendingCall);
@@ -1113,7 +1113,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
         }
         return clientCallImplChannel.newCall(method, callOptions);
       }
-      return new ConfigSelectingClientCall<>(
+      return new ConfigSelectingClientCall<ReqT, RespT>(
           selector, clientCallImplChannel, executor, method, callOptions);
     }
   }
@@ -1312,7 +1312,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
     final Object lock = new Object();
 
     @GuardedBy("lock")
-    Collection<ClientStream> uncommittedRetriableStreams = new HashSet<>();
+    Collection<ClientStream> uncommittedRetriableStreams = new HashSet<ClientStream>();
 
     @GuardedBy("lock")
     Status shutdownStatus;
@@ -1342,7 +1342,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
       Collection<ClientStream> streams;
 
       synchronized (lock) {
-        streams = new ArrayList<>(uncommittedRetriableStreams);
+        streams = new ArrayList<ClientStream>(uncommittedRetriableStreams);
       }
 
       for (ClientStream stream : streams) {
@@ -1375,7 +1375,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
           shutdownStatusCopy = shutdownStatus;
           // Because retriable transport is long-lived, we take this opportunity to down-size the
           // hashmap.
-          uncommittedRetriableStreams = new HashSet<>();
+          uncommittedRetriableStreams = new HashSet<ClientStream>();
         }
       }
 

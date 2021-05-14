@@ -76,7 +76,7 @@ public class DnsNameResolver extends NameResolver {
   static final String SERVICE_CONFIG_PREFIX = "grpc_config=";
   private static final Set<String> SERVICE_CONFIG_CHOICE_KEYS =
       Collections.unmodifiableSet(
-          new HashSet<>(
+          new HashSet<String>(
               Arrays.asList(
                   SERVICE_CONFIG_CHOICE_CLIENT_LANGUAGE_KEY,
                   SERVICE_CONFIG_CHOICE_PERCENTAGE_KEY,
@@ -127,7 +127,7 @@ public class DnsNameResolver extends NameResolver {
   private final Random random = new Random();
 
   protected volatile AddressResolver addressResolver = JdkAddressResolver.INSTANCE;
-  private final AtomicReference<ResourceResolver> resourceResolver = new AtomicReference<>();
+  private final AtomicReference<ResourceResolver> resourceResolver = new AtomicReference<ResourceResolver>();
 
   private final String authority;
   private final String host;
@@ -227,7 +227,7 @@ public class DnsNameResolver extends NameResolver {
       }
     }
     // Each address forms an EAG
-    List<EquivalentAddressGroup> servers = new ArrayList<>(addresses.size());
+    List<EquivalentAddressGroup> servers = new ArrayList<EquivalentAddressGroup>(addresses.size());
     for (InetAddress inetAddr : addresses) {
       servers.add(new EquivalentAddressGroup(new InetSocketAddress(inetAddr, port)));
     }
@@ -358,7 +358,10 @@ public class DnsNameResolver extends NameResolver {
     List<Map<String, ?>> possibleServiceConfigChoices;
     try {
       possibleServiceConfigChoices = parseTxtResults(rawTxtRecords);
-    } catch (IOException | RuntimeException e) {
+    } catch (IOException e) {
+      return ConfigOrError.fromError(
+          Status.UNKNOWN.withDescription("failed to parse TXT records").withCause(e));
+    } catch (RuntimeException e) {
       return ConfigOrError.fromError(
           Status.UNKNOWN.withDescription("failed to parse TXT records").withCause(e));
     }
@@ -416,7 +419,7 @@ public class DnsNameResolver extends NameResolver {
    */
   @VisibleForTesting
   static List<Map<String, ?>> parseTxtResults(List<String> txtRecords) throws IOException {
-    List<Map<String, ?>> possibleServiceConfigChoices = new ArrayList<>();
+    List<Map<String, ?>> possibleServiceConfigChoices = new ArrayList<Map<String, ?>>();
     for (String txtRecord : txtRecords) {
       if (!txtRecord.startsWith(SERVICE_CONFIG_PREFIX)) {
         logger.log(Level.FINE, "Ignoring non service config {0}", new Object[]{txtRecord});

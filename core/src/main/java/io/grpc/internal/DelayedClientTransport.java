@@ -65,7 +65,7 @@ final class DelayedClientTransport implements ManagedClientTransport {
 
   @Nonnull
   @GuardedBy("lock")
-  private Collection<PendingStream> pendingStreams = new LinkedHashSet<>();
+  private Collection<PendingStream> pendingStreams = new LinkedHashSet<PendingStream>();
 
   /**
    * When {@code shutdownStatus != null && !hasPendingStreams()}, then the transport is considered
@@ -277,9 +277,9 @@ final class DelayedClientTransport implements ManagedClientTransport {
       if (picker == null || !hasPendingStreams()) {
         return;
       }
-      toProcess = new ArrayList<>(pendingStreams);
+      toProcess = new ArrayList<PendingStream>(pendingStreams);
     }
-    ArrayList<PendingStream> toRemove = new ArrayList<>();
+    ArrayList<PendingStream> toRemove = new ArrayList<PendingStream>();
 
     for (final PendingStream stream : toProcess) {
       PickResult pickResult = picker.pickSubchannel(stream.args);
@@ -315,7 +315,7 @@ final class DelayedClientTransport implements ManagedClientTransport {
       // Because delayed transport is long-lived, we take this opportunity to down-size the
       // hashmap.
       if (pendingStreams.isEmpty()) {
-        pendingStreams = new LinkedHashSet<>();
+        pendingStreams = new LinkedHashSet<PendingStream>();
       }
       if (!hasPendingStreams()) {
         // There may be a brief gap between delayed transport clearing in-use state, and first real

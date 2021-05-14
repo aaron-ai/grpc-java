@@ -180,7 +180,7 @@ public abstract class LoadBalancer {
         @NameResolver.ResolutionResultAttr Attributes attributes,
         Object loadBalancingPolicyConfig) {
       this.addresses =
-          Collections.unmodifiableList(new ArrayList<>(checkNotNull(addresses, "addresses")));
+          Collections.unmodifiableList(new ArrayList<EquivalentAddressGroup>(checkNotNull(addresses, "addresses")));
       this.attributes = checkNotNull(attributes, "attributes");
       this.loadBalancingPolicyConfig = loadBalancingPolicyConfig;
     }
@@ -820,7 +820,7 @@ public abstract class LoadBalancer {
        */
       public Builder setAddresses(List<EquivalentAddressGroup> addrs) {
         checkArgument(!addrs.isEmpty(), "addrs is empty");
-        this.addrs = Collections.unmodifiableList(new ArrayList<>(addrs));
+        this.addrs = Collections.unmodifiableList(new ArrayList<EquivalentAddressGroup>(addrs));
         return this;
       }
 
@@ -866,7 +866,7 @@ public abstract class LoadBalancer {
        */
       public static <T> Key<T> create(String debugString) {
         Preconditions.checkNotNull(debugString, "debugString");
-        return new Key<>(debugString, /*defaultValue=*/ null);
+        return new Key<T>(debugString, /*defaultValue=*/ null);
       }
 
       /**
@@ -879,7 +879,7 @@ public abstract class LoadBalancer {
        */
       public static <T> Key<T> createWithDefault(String debugString, T defaultValue) {
         Preconditions.checkNotNull(debugString, "debugString");
-        return new Key<>(debugString, defaultValue);
+        return new Key<T>(debugString, defaultValue);
       }
 
       /**

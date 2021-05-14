@@ -47,7 +47,7 @@ public final class ChoiceServerCredentials extends ServerCredentials {
         throw new NullPointerException();
       }
     }
-    this.creds = Collections.unmodifiableList(new ArrayList<>(Arrays.asList(creds)));
+    this.creds = Collections.unmodifiableList(new ArrayList<ServerCredentials>(Arrays.asList(creds)));
   }
 
   /** Non-empty list of credentials, in preference order. */

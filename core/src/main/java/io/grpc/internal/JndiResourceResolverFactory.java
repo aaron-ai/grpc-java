@@ -116,7 +116,7 @@ final class JndiResourceResolverFactory implements DnsNameResolver.ResourceResol
             Level.FINER, "Found {0} TXT records", new Object[]{serviceConfigRawTxtRecords.size()});
       }
       List<String> serviceConfigTxtRecords =
-          new ArrayList<>(serviceConfigRawTxtRecords.size());
+          new ArrayList<String>(serviceConfigRawTxtRecords.size());
       for (String serviceConfigRawTxtRecord : serviceConfigRawTxtRecords) {
         serviceConfigTxtRecords.add(unquote(serviceConfigRawTxtRecord));
       }
@@ -135,7 +135,7 @@ final class JndiResourceResolverFactory implements DnsNameResolver.ResourceResol
         logger.log(
             Level.FINER, "Found {0} SRV records", new Object[]{rawSrvRecords.size()});
       }
-      List<SrvRecord> srvRecords = new ArrayList<>(rawSrvRecords.size());
+      List<SrvRecord> srvRecords = new ArrayList<SrvRecord>(rawSrvRecords.size());
       Exception first = null;
       Level level = Level.WARNING;
       for (String rawSrv : rawSrvRecords) {
@@ -205,9 +205,9 @@ final class JndiResourceResolverFactory implements DnsNameResolver.ResourceResol
     public List<String> getAllRecords(String recordType, String name) throws NamingException {
       checkAvailable();
       String[] rrType = new String[]{recordType};
-      List<String> records = new ArrayList<>();
+      List<String> records = new ArrayList<String>();
 
-      Hashtable<String, String> env = new Hashtable<>();
+      Hashtable<String, String> env = new Hashtable<String, String>();
       env.put("com.sun.jndi.ldap.connect.timeout", "5000");
       env.put("com.sun.jndi.ldap.read.timeout", "5000");
       DirContext dirContext = new InitialDirContext(env);

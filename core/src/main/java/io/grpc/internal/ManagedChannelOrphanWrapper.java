@@ -31,10 +31,10 @@ import java.util.logging.Logger;
 
 final class ManagedChannelOrphanWrapper extends ForwardingManagedChannel {
   private static final ReferenceQueue<ManagedChannelOrphanWrapper> refqueue =
-      new ReferenceQueue<>();
+      new ReferenceQueue<ManagedChannelOrphanWrapper>();
   // Retain the References so they don't get GC'd
   private static final ConcurrentMap<ManagedChannelReference, ManagedChannelReference> refs =
-      new ConcurrentHashMap<>();
+      new ConcurrentHashMap<ManagedChannelReference, ManagedChannelReference>();
   private static final Logger logger =
       Logger.getLogger(ManagedChannelOrphanWrapper.class.getName());
 
@@ -88,7 +88,7 @@ final class ManagedChannelOrphanWrapper extends ForwardingManagedChannel {
         ReferenceQueue<ManagedChannelOrphanWrapper> refqueue,
         ConcurrentMap<ManagedChannelReference, ManagedChannelReference> refs) {
       super(orphanable, refqueue);
-      allocationSite = new SoftReference<>(
+      allocationSite = new SoftReference<RuntimeException>(
           ENABLE_ALLOCATION_TRACKING
               ? new RuntimeException("ManagedChannel allocation site")
               : missingCallSite);

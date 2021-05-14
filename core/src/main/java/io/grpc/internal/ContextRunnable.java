@@ -35,10 +35,13 @@ abstract class ContextRunnable implements Runnable {
     Context previous = context.attach();
     try {
       runInContext();
-    } finally {
+    } catch (Throwable t) {
+      throw new RuntimeException(t);
+    }
+      finally {
       context.detach(previous);
     }
   }
 
-  public abstract void runInContext();
+  public abstract void runInContext() throws Throwable;
 }

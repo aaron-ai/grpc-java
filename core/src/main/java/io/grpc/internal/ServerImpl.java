@@ -114,7 +114,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
   private final Object lock = new Object();
   @GuardedBy("lock") private boolean transportServersTerminated;
   /** {@code transportServer} and services encapsulating something similar to a TCP connection. */
-  @GuardedBy("lock") private final Set<ServerTransport> transports = new HashSet<>();
+  @GuardedBy("lock") private final Set<ServerTransport> transports = new HashSet<ServerTransport>();
   @GuardedBy("lock") private int activeTransportServers;
 
   private final Context rootContext;
@@ -144,7 +144,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
         Preconditions.checkNotNull(builder.fallbackRegistry, "fallbackRegistry");
     Preconditions.checkNotNull(transportServers, "transportServers");
     Preconditions.checkArgument(!transportServers.isEmpty(), "no servers provided");
-    this.transportServers = new ArrayList<>(transportServers);
+    this.transportServers = new ArrayList<InternalServer>(transportServers);
     this.logId =
         InternalLogId.allocate("Server", String.valueOf(getListenSocketsIgnoringLifecycle()));
     // Fork from the passed in context so that it does not propagate cancellation, it only
@@ -153,7 +153,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
     this.decompressorRegistry = builder.decompressorRegistry;
     this.compressorRegistry = builder.compressorRegistry;
     this.transportFilters = Collections.unmodifiableList(
-        new ArrayList<>(builder.transportFilters));
+        new ArrayList<ServerTransportFilter>(builder.transportFilters));
     this.interceptors =
         builder.interceptors.toArray(new ServerInterceptor[builder.interceptors.size()]);
     this.handshakeTimeoutMillis = builder.handshakeTimeoutMillis;
@@ -216,7 +216,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
 
   private List<SocketAddress> getListenSocketsIgnoringLifecycle() {
     synchronized (lock) {
-      List<SocketAddress> addrs = new ArrayList<>(transportServers.size());
+      List<SocketAddress> addrs = new ArrayList<SocketAddress>(transportServers.size());
       for (InternalServer ts : transportServers) {
         addrs.add(ts.getListenSocketAddress());
       }
@@ -233,7 +233,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
       List<ServerServiceDefinition> registryServices = registry.getServices();
       int servicesCount = registryServices.size() + fallbackServices.size();
       List<ServerServiceDefinition> services =
-          new ArrayList<>(servicesCount);
+          new ArrayList<ServerServiceDefinition>(servicesCount);
       services.addAll(registryServices);
       services.addAll(fallbackServices);
       return Collections.unmodifiableList(services);
@@ -288,7 +288,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
         return this;
       }
       shutdownNowStatus = nowStatus;
-      transportsCopy = new ArrayList<>(transports);
+      transportsCopy = new ArrayList<ServerTransport>(transports);
       savedServerShutdownCallbackInvoked = serverShutdownCallbackInvoked;
     }
     // Short-circuiting not strictly necessary, but prevents transports from needing to handle
@@ -395,7 +395,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
 
         // transports collection can be modified during shutdown(), even if we hold the lock, due
         // to reentrancy.
-        copiedTransports = new ArrayList<>(transports);
+        copiedTransports = new ArrayList<ServerTransport>(transports);
         shutdownNowStatusCopy = shutdownNowStatus;
         serverShutdownCallbackInvoked = true;
       }
@@ -525,7 +525,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
         }
 
         @Override
-        public void runInContext() {
+        public void runInContext() throws Throwable {
           PerfMark.startTask("ServerTransportListener$StreamCreated.startCall", tag);
           PerfMark.linkIn(link);
           try {
@@ -535,7 +535,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
           }
         }
 
-        private void runInternal() {
+        private void runInternal() throws Throwable {
           ServerStreamListener listener = NOOP_LISTENER;
           try {
             ServerMethodDefinition<?, ?> method = registry.lookupMethod(methodName);
@@ -612,7 +612,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
         Context.CancellableContext context, StatsTraceContext statsTraceCtx, Tag tag) {
       // TODO(ejona86): should we update fullMethodName to have the canonical path of the method?
       statsTraceCtx.serverCallStarted(
-          new ServerCallInfoImpl<>(
+          new ServerCallInfoImpl<ReqT, RespT>(
               methodDef.getMethodDescriptor(), // notify with original method descriptor
               stream.getAttributes(),
               stream.getAuthority()));
@@ -634,7 +634,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
         Context.CancellableContext context,
         Tag tag) {
 
-      ServerCallImpl<WReqT, WRespT> call = new ServerCallImpl<>(
+      ServerCallImpl<WReqT, WRespT> call = new ServerCallImpl<WReqT, WRespT>(
           stream,
           methodDef.getMethodDescriptor(),
           headers,
@@ -775,7 +775,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
         }
 
         @Override
-        public void runInContext() {
+        public void runInContext() throws Throwable {
           PerfMark.startTask("ServerCallListener(app).messagesAvailable", tag);
           PerfMark.linkIn(link);
           try {
@@ -807,7 +807,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
         }
 
         @Override
-        public void runInContext() {
+        public void runInContext() throws Throwable {
           PerfMark.startTask("ServerCallListener(app).halfClosed", tag);
           PerfMark.linkIn(link);
           try {
@@ -878,7 +878,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
         }
 
         @Override
-        public void runInContext() {
+        public void runInContext() throws Throwable {
           PerfMark.startTask("ServerCallListener(app).onReady", tag);
           PerfMark.linkIn(link);
           try {

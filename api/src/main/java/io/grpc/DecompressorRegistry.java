@@ -73,7 +73,7 @@ public final class DecompressorRegistry {
       newSize++;
     }
     Map<String, DecompressorInfo> newDecompressors =
-        new LinkedHashMap<>(newSize);
+        new LinkedHashMap<String, DecompressorInfo>(newSize);
     for (DecompressorInfo di : parent.decompressors.values()) {
       String previousEncoding = di.decompressor.getMessageEncoding();
       if (!previousEncoding.equals(encoding)) {
@@ -89,7 +89,7 @@ public final class DecompressorRegistry {
   }
 
   private DecompressorRegistry() {
-    decompressors = new LinkedHashMap<>(0);
+    decompressors = new LinkedHashMap<String, DecompressorInfo>(0);
     advertisedDecompressors = new byte[0];
   }
 
@@ -114,7 +114,7 @@ public final class DecompressorRegistry {
    */
   @ExperimentalApi("https://github.com/grpc/grpc-java/issues/1704")
   public Set<String> getAdvertisedMessageEncodings() {
-    Set<String> advertisedDecompressors = new HashSet<>(decompressors.size());
+    Set<String> advertisedDecompressors = new HashSet<String>(decompressors.size());
     for (Map.Entry<String, DecompressorInfo> entry : decompressors.entrySet()) {
       if (entry.getValue().advertised) {
         advertisedDecompressors.add(entry.getKey());

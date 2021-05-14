@@ -73,9 +73,9 @@ public final class ServerImplBuilder extends ServerBuilder<ServerImplBuilder> {
   // mutable state
   final InternalHandlerRegistry.Builder registryBuilder =
       new InternalHandlerRegistry.Builder();
-  final List<ServerTransportFilter> transportFilters = new ArrayList<>();
-  final List<ServerInterceptor> interceptors = new ArrayList<>();
-  private final List<ServerStreamTracer.Factory> streamTracerFactories = new ArrayList<>();
+  final List<ServerTransportFilter> transportFilters = new ArrayList<ServerTransportFilter>();
+  final List<ServerInterceptor> interceptors = new ArrayList<ServerInterceptor>();
+  private final List<ServerStreamTracer.Factory> streamTracerFactories = new ArrayList<ServerStreamTracer.Factory>();
   private final ClientTransportServersBuilder clientTransportServersBuilder;
   HandlerRegistry fallbackRegistry = DEFAULT_FALLBACK_REGISTRY;
   ObjectPool<? extends Executor> executorPool = DEFAULT_EXECUTOR_POOL;
@@ -116,7 +116,7 @@ public final class ServerImplBuilder extends ServerBuilder<ServerImplBuilder> {
 
   @Override
   public ServerImplBuilder executor(@Nullable Executor executor) {
-    this.executorPool = executor != null ? new FixedObjectPool<>(executor) : DEFAULT_EXECUTOR_POOL;
+    this.executorPool = executor != null ? new FixedObjectPool<Executor>(executor) : DEFAULT_EXECUTOR_POOL;
     return this;
   }
 
@@ -234,7 +234,7 @@ public final class ServerImplBuilder extends ServerBuilder<ServerImplBuilder> {
 
   @VisibleForTesting
   List<? extends ServerStreamTracer.Factory> getTracerFactories() {
-    ArrayList<ServerStreamTracer.Factory> tracerFactories = new ArrayList<>();
+    ArrayList<ServerStreamTracer.Factory> tracerFactories = new ArrayList<ServerStreamTracer.Factory>();
     if (statsEnabled) {
       ServerStreamTracer.Factory censusStatsTracerFactory = null;
       try {

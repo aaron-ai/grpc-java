@@ -48,7 +48,7 @@ public final class ServerCalls {
    */
   public static <ReqT, RespT> ServerCallHandler<ReqT, RespT> asyncUnaryCall(
       UnaryMethod<ReqT, RespT> method) {
-    return new UnaryServerCallHandler<>(method, false);
+    return new UnaryServerCallHandler<ReqT, RespT>(method, false);
   }
 
   /**
@@ -58,7 +58,7 @@ public final class ServerCalls {
    */
   public static <ReqT, RespT> ServerCallHandler<ReqT, RespT> asyncServerStreamingCall(
       ServerStreamingMethod<ReqT, RespT> method) {
-    return new UnaryServerCallHandler<>(method, true);
+    return new UnaryServerCallHandler<ReqT, RespT>(method, true);
   }
 
   /**
@@ -68,7 +68,7 @@ public final class ServerCalls {
    */
   public static <ReqT, RespT> ServerCallHandler<ReqT, RespT> asyncClientStreamingCall(
       ClientStreamingMethod<ReqT, RespT> method) {
-    return new StreamingServerCallHandler<>(method, false);
+    return new StreamingServerCallHandler<ReqT, RespT>(method, false);
   }
 
   /**
@@ -78,7 +78,7 @@ public final class ServerCalls {
    */
   public static <ReqT, RespT> ServerCallHandler<ReqT, RespT> asyncBidiStreamingCall(
       BidiStreamingMethod<ReqT, RespT> method) {
-    return new StreamingServerCallHandler<>(method, true);
+    return new StreamingServerCallHandler<ReqT, RespT>(method, true);
   }
 
   /**
@@ -127,7 +127,7 @@ public final class ServerCalls {
           call.getMethodDescriptor().getType().clientSendsOneMessage(),
           "asyncUnaryRequestCall is only for clientSendsOneMessage methods");
       ServerCallStreamObserverImpl<ReqT, RespT> responseObserver =
-          new ServerCallStreamObserverImpl<>(call, serverStreaming);
+          new ServerCallStreamObserverImpl<ReqT, RespT>(call, serverStreaming);
       // We expect only 1 request, but we ask for 2 requests here so that if a misbehaving client
       // sends more than 1 requests, ServerCall will catch it. Note that disabling auto
       // inbound flow control has no effect on unary calls.
@@ -224,7 +224,7 @@ public final class ServerCalls {
     @Override
     public ServerCall.Listener<ReqT> startCall(ServerCall<ReqT, RespT> call, Metadata headers) {
       ServerCallStreamObserverImpl<ReqT, RespT> responseObserver =
-          new ServerCallStreamObserverImpl<>(call, bidi);
+          new ServerCallStreamObserverImpl<ReqT, RespT>(call, bidi);
       StreamObserver<ReqT> requestObserver = method.invoke(responseObserver);
       responseObserver.freeze();
       if (responseObserver.autoRequestEnabled) {
@@ -452,7 +452,7 @@ public final class ServerCalls {
     // NB: For streaming call we want to do the same as for unary call. Fail-fast by setting error
     // on responseObserver and then return no-op observer.
     asyncUnimplementedUnaryCall(methodDescriptor, responseObserver);
-    return new NoopStreamObserver<>();
+    return new NoopStreamObserver<T>();
   }
 
   /**

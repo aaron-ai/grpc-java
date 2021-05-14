@@ -127,7 +127,7 @@ public class Context {
     static final Storage storage;
 
     static {
-      AtomicReference<Throwable> deferredStorageFailure = new AtomicReference<>();
+      AtomicReference<Throwable> deferredStorageFailure = new AtomicReference<Throwable>();
       storage = createStorage(deferredStorageFailure);
       Throwable failure = deferredStorageFailure.get();
       // Logging must happen after storage has been set, as loggers may use Context.
@@ -160,7 +160,7 @@ public class Context {
    *                    The value should be not null.
    */
   public static <T> Key<T> key(String debugString) {
-    return new Key<>(debugString);
+    return new Key<T>(debugString);
   }
 
   /**
@@ -171,7 +171,7 @@ public class Context {
    *                    The value should be not null.
    */
   public static <T> Key<T> keyWithDefault(String debugString, T defaultValue) {
-    return new Key<>(debugString, defaultValue);
+    return new Key<T>(debugString, defaultValue);
   }
 
   /**
@@ -748,7 +748,7 @@ public class Context {
           if (listeners == null) {
             // Now that we have a listener we need to listen to our parent so
             // we can cascade listener notification.
-            listeners = new ArrayList<>();
+            listeners = new ArrayList<ExecutableListener>();
             listeners.add(executableListener);
             if (cancellableAncestor != null) {
               parentListener =

@@ -698,7 +698,7 @@ public abstract class NameResolver {
         List<EquivalentAddressGroup> addresses,
         @ResolutionResultAttr Attributes attributes,
         ConfigOrError serviceConfig) {
-      this.addresses = Collections.unmodifiableList(new ArrayList<>(addresses));
+      this.addresses = Collections.unmodifiableList(new ArrayList<EquivalentAddressGroup>(addresses));
       this.attributes = checkNotNull(attributes, "attributes");
       this.serviceConfig = serviceConfig;
     }

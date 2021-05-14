@@ -62,7 +62,7 @@ public final class ServerInterceptors {
   public static ServerServiceDefinition interceptForward(
       ServerServiceDefinition serviceDef,
       List<? extends ServerInterceptor> interceptors) {
-    List<? extends ServerInterceptor> copy = new ArrayList<>(interceptors);
+    List<? extends ServerInterceptor> copy = new ArrayList<ServerInterceptor>(interceptors);
     Collections.reverse(copy);
     return intercept(serviceDef, copy);
   }
@@ -185,9 +185,9 @@ public final class ServerInterceptors {
       final ServerServiceDefinition serviceDef,
       final MethodDescriptor.Marshaller<T> marshaller) {
     List<ServerMethodDefinition<?, ?>> wrappedMethods =
-        new ArrayList<>();
+        new ArrayList<ServerMethodDefinition<?, ?>>();
     List<MethodDescriptor<?, ?>> wrappedDescriptors =
-        new ArrayList<>();
+        new ArrayList<MethodDescriptor<?, ?>>();
     // Wrap the descriptors
     for (final ServerMethodDefinition<?, ?> definition : serviceDef.getMethods()) {
       final MethodDescriptor<?, ?> originalMethodDescriptor = definition.getMethodDescriptor();
@@ -225,7 +225,7 @@ public final class ServerInterceptors {
   static final class InterceptCallHandler<ReqT, RespT> implements ServerCallHandler<ReqT, RespT> {
     public static <ReqT, RespT> InterceptCallHandler<ReqT, RespT> create(
         ServerInterceptor interceptor, ServerCallHandler<ReqT, RespT> callHandler) {
-      return new InterceptCallHandler<>(interceptor, callHandler);
+      return new InterceptCallHandler<ReqT, RespT>(interceptor, callHandler);
     }
 
     private final ServerInterceptor interceptor;
